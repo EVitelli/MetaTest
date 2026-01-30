@@ -1,0 +1,14 @@
+<Solution>
+  <Project Path="Business/Business.csproj" Id="a7373b8e-4e33-4df6-81e8-95d94c8e83b5">
+    <BuildDependency Project="Domain/Domain.csproj" />
+  </Project>
+  <Project Path="Domain/Domain.csproj" Id="c181b760-7dba-457b-acf3-2955b008a456" />
+  <Project Path="Infrastructure/Infrastructure.csproj" Id="1234a1a2-cc7b-460a-bd37-349cb7f8fccc">
+    <BuildDependency Project="Domain/Domain.csproj" />
+  </Project>
+  <Project Path="WebApi/WebApi.csproj">
+    <BuildDependency Project="Business/Business.csproj" />
+    <BuildDependency Project="Domain/Domain.csproj" />
+    <BuildDependency Project="Infrastructure/Infrastructure.csproj" />
+  </Project>
+</Solution>

@@ -4,6 +4,9 @@ namespace Domain.Interfaces.Services
 {
     public interface IUsuarioService
     {
-       UsuarioResponse? GetUsuario(int id);
+        Task<GetUsuarioResponse?> BuscarUsuarioAsync(uint id);
+        Task<UsuarioResponse?> BuscarTodasInfoUsuarioAsync(uint id);
+        Task<PostUsuarioResponse> CriarUsuarioAsync(UsuarioRequest usuario);
+        Task<DeleteUsuarioResponse?> DeletarUsuarioAsync(uint id);
     }
 }

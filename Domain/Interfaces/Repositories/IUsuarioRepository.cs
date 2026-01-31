@@ -1,14 +1,12 @@
 ﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Interfaces.Repositories
 {
     public interface IUsuarioRepository
     {
-        Usuario? GetUsuario(int id);
+        Task<Usuario?> AtualizaUsuario(Usuario usuario);
+        Task<Usuario> CriarUsuarioAsync(Usuario usuario);
+        Task<Usuario?> DeletarUsuario(uint id);
+        Task<Usuario?> GetUsuarioAsync(uint id);
     }
 }

@@ -18,6 +18,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DatabaseContext>();
 builder.Services.AddTransient<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddTransient<IUsuarioService, UsuarioService>();
+builder.Services.AddTransient<IContaRepository, ContaRepository>();
+builder.Services.AddTransient<IContaService, ContaService>();
 
 
 var app = builder.Build();

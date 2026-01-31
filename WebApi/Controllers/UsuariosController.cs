@@ -7,24 +7,28 @@ namespace WebApi.Controllers
 
     [ApiController]
     [Route("[controller]")]
-    public class UsuariosController(IUsuarioService service): ControllerBase
+    public class UsuariosController(IUsuarioService service) : ControllerBase
     {
         [HttpPost]
-        public IActionResult Post(UsuarioRequest usuario)
+        public async Task<IActionResult> PostAsync(UsuarioRequest usuario)
         {
-            UsuarioResponse response = new UsuarioResponse
-            {
-                Id = 1,
-                DataCriacao = DateTime.Now
-            };
+            PostUsuarioResponse response = await service.CriarUsuarioAsync(usuario);
 
             return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> GetAsync(uint id)
         {
-            UsuarioResponse? response = service.GetUsuario(id);
+            GetUsuarioResponse? response = await service.BuscarUsuarioAsync(id);
+
+            return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(uint id)
+        {
+            DeleteUsuarioResponse? response = await service.DeletarUsuarioAsync(id);
 
             return Ok(response);
         }

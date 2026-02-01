@@ -4,9 +4,9 @@ namespace Domain.Interfaces.Repositories
 {
     public interface IUsuarioRepository
     {
-        Task<Usuario?> AtualizaUsuario(Usuario usuario);
+        Task<Usuario?> AtualizarUsuarioAsync(Usuario usuario);
+        Task<Usuario?> BuscarUsuarioAsync(uint id);
         Task<Usuario> CriarUsuarioAsync(Usuario usuario);
-        Task<Usuario?> DeletarUsuario(uint id);
-        Task<Usuario?> GetUsuarioAsync(uint id);
+        Task<Usuario?> DeletarUsuarioAsync(uint id);
     }
 }

@@ -9,7 +9,7 @@ namespace Infrastructure.Repositories
     public class UsuarioRepository(DatabaseContext context) : IUsuarioRepository
     {
         //TODO: Remove if don't use
-        public async Task<Usuario?> AtualizaUsuario(Usuario usuario)
+        public async Task<Usuario?> AtualizarUsuarioAsync(Usuario usuario)
         {
             Usuario? usuarioDb = await context.Usuarios.FirstOrDefaultAsync(x => x.Id == usuario.Id);
 
@@ -29,6 +29,11 @@ namespace Infrastructure.Repositories
             return usuarioDb;
         }
 
+        public async Task<Usuario?> BuscarUsuarioAsync(uint id)
+        {
+            return await context.Usuarios.FindAsync(id);
+        }
+
         public async Task<Usuario> CriarUsuarioAsync(Usuario usuario)
         {
             ArgumentNullException.ThrowIfNull(usuario);
@@ -39,9 +44,9 @@ namespace Infrastructure.Repositories
             return usuario;
         }
 
-        public async Task<Usuario?> DeletarUsuario(uint id)
+        public async Task<Usuario?> DeletarUsuarioAsync(uint id)
         {
-            Usuario? usuario = await this.GetUsuarioAsync(id);
+            Usuario? usuario = await this.BuscarUsuarioAsync(id);
 
             if (usuario is null)
                 return null;
@@ -57,9 +62,5 @@ namespace Infrastructure.Repositories
             return usuario;
         }
 
-        public async Task<Usuario?> GetUsuarioAsync(uint id)
-        {
-            return await context.Usuarios.FindAsync(id);
-        }
     }
 }

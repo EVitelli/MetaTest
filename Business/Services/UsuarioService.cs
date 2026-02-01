@@ -33,7 +33,7 @@ namespace Business.Services
 
         public async Task<GetUsuarioResponse?> BuscarUsuarioAsync(uint id)
         {
-            var usuario = await repository.GetUsuarioAsync(id);
+            var usuario = await repository.BuscarUsuarioAsync(id);
 
             if (usuario is null)
                 return null;
@@ -51,7 +51,7 @@ namespace Business.Services
 
         public async Task<UsuarioResponse?> BuscarTodasInfoUsuarioAsync(uint id)
         {
-            var usuario = await repository.GetUsuarioAsync(id);
+            var usuario = await repository.BuscarUsuarioAsync(id);
 
             if (usuario is null)
                 return null;
@@ -72,7 +72,7 @@ namespace Business.Services
 
         public async Task<DeleteUsuarioResponse?> DeletarUsuarioAsync(uint id)
         {
-            Usuario? usuario = await repository.DeletarUsuario(id);
+            Usuario? usuario = await repository.DeletarUsuarioAsync(id);
 
             return usuario is null ? null : new DeleteUsuarioResponse
             {

@@ -11,7 +11,7 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CriarConta(ContaRequest conta)
         {
-            PostContaResponse response = await service.CriarConta(conta);
+            PostContaResponse response = await service.CriarContaAsync(conta);
 
             return Ok(response);
         }

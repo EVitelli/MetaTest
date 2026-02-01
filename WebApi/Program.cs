@@ -20,7 +20,8 @@ builder.Services.AddTransient<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddTransient<IUsuarioService, UsuarioService>();
 builder.Services.AddTransient<IContaRepository, ContaRepository>();
 builder.Services.AddTransient<IContaService, ContaService>();
-
+builder.Services.AddScoped<ITransacaoRepository, TransacaoRepository>();
+builder.Services.AddScoped<ITransacaoService, TransacaoService>();
 
 var app = builder.Build();
 

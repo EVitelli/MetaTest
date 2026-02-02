@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.Auth;
+using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
@@ -12,15 +13,19 @@ namespace Business.Services
         {
             ArgumentNullException.ThrowIfNull(usuario);
 
-            //TODO: add fluent validation
+            byte[] salt;
+            var hash = PasswordHasher.HashPassword(usuario.Senha, out salt);
 
+            //TODO: add fluent validation
             Usuario usuarioCriado = await repository.CriarUsuarioAsync(new Usuario
             {
                 Nome = usuario.Nome,
                 Tipo = usuario.Tipo,
                 Cpf = usuario.Cpf,
                 Email = usuario.Email,
-                Status = EStatus.Ativo
+                Status = EStatus.Ativo,
+                Hash = hash,
+                Salt = salt
             });
 
             return new PostUsuarioResponse
@@ -70,15 +75,9 @@ namespace Business.Services
             };
         }
 
-        public async Task<UsuarioAuthInfoResponse?> BuscarAuthInfoAsync(UsuarioAuthInfoRequest request)
+        public async Task<UsuarioAuthInfoResponse?> BuscarAuthInfoAsync(string email)
         {
-            Usuario? usuario = new()
-            {
-                Email = request.Email,
-                Hash = request.Hash
-            };
-
-            usuario = await repository.BuscarAuthInfoAsync(usuario);
+            Usuario? usuario = await repository.BuscarUsuarioPorEmailAsync(email);
 
             if (usuario is null)
                 return null;
@@ -87,6 +86,8 @@ namespace Business.Services
             {
                 Tipo = usuario.Tipo,
                 Email = usuario.Email,
+                Hash = usuario.Hash,
+                Salt = usuario.Salt
             };
         }
         public async Task<DeleteUsuarioResponse?> DeletarUsuarioAsync(uint id)

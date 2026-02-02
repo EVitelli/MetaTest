@@ -8,6 +8,7 @@ namespace Domain.Models
         public ETipoUsuario Tipo { get; set; }
         public required string Cpf { get; set; }
         public required string Email { get; set; }
+        public required string Senha { get; set; }
     }
 
     public class PostUsuarioResponse
@@ -50,14 +51,14 @@ namespace Domain.Models
     public class UsuarioAuthInfoRequest
     {
         public required string Email { get; set; }
-        public required string Hash { get; set; }
+        public required string Senha { get; set; }
     }
 
     public class UsuarioAuthInfoResponse
     {
         public required string Email { get; set; }
         public ETipoUsuario Tipo { get; set; }
-
-
+        public byte[] Salt { get; set; }
+        public string Hash { get; set; }
     }
 }

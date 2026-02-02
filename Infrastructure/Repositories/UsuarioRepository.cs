@@ -33,9 +33,9 @@ namespace Infrastructure.Repositories
             return await context.Usuarios.FindAsync(id);
         }
 
-        public async Task<Usuario?> BuscarAuthInfoAsync(Usuario usuario)
+        public async Task<Usuario?> BuscarUsuarioPorEmailAsync(string email)
         {
-            return await context.Usuarios.FirstOrDefaultAsync(x => x.Email == usuario.Email && x.Hash == usuario.Hash);
+            return await context.Usuarios.FirstOrDefaultAsync(x => x.Email == email);
         }
 
         public async Task<Usuario> CriarUsuarioAsync(Usuario usuario)

@@ -1,6 +1,5 @@
 ﻿using Domain.Interfaces.Services;
 using Domain.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -12,9 +11,6 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginAsync(LoginRequest usuario)
         {
-            var hasher = new PasswordHasher<LoginRequest>();
-            usuario.Senha = hasher.HashPassword(usuario, usuario.Senha);
-
             string token = await service.LoginAsync(usuario);
 
             if(token is null)

@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces.Services;
+﻿using Domain.Auth;
+using Domain.Interfaces.Services;
 using Domain.Models;
 
 namespace Business.Services
@@ -7,13 +8,9 @@ namespace Business.Services
     {
         public async Task<string?> LoginAsync(LoginRequest usuario)
         {
-            UsuarioAuthInfoResponse? authInfo = await usuarioService.BuscarAuthInfoAsync(new UsuarioAuthInfoRequest()
-            {
-                Email = usuario.Email,
-                Hash = usuario.Senha
-            });
+            UsuarioAuthInfoResponse? authInfo = await usuarioService.BuscarAuthInfoAsync(usuario.Email);
 
-            if (authInfo is null)
+            if (authInfo is null || !PasswordHasher.VerifyPassword(usuario.Senha, authInfo.Hash, authInfo.Salt))
                 return null;
 
             return authService.GenerateToken(new TokenRequest

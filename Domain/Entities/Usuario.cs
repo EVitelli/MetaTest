@@ -11,7 +11,8 @@ namespace Domain.Entities
         public ETipoUsuario Tipo { get; set; }
         public string Cpf { get; set; }
         public string Email { get; set; }
-        public string? Hash { get; set; }
+        public string Hash { get; set; }
+        public byte[] Salt { get; set; }
         public DateTime CriadoEm { get; set; } = DateTime.Now;
         public DateTime AtualizadoEm { get; set; } = DateTime.Now;
         public DateTime? DeletadoEm { get; set; }

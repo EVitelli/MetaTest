@@ -1,5 +1,7 @@
-﻿using Domain.Interfaces.Services;
+﻿using Domain.Enums;
+using Domain.Interfaces.Services;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -10,13 +12,24 @@ namespace WebApi.Controllers
     public class UsuariosController(IUsuarioService service) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> PostAsync(UsuarioRequest usuario)
+        public async Task<IActionResult> CriarUsuarioAsync(UsuarioRequest usuario)
         {
-            PostUsuarioResponse response = await service.CriarUsuarioAsync(usuario);
+            if(!User.Identity.IsAuthenticated)
+            {
+                usuario.Tipo = ETipoUsuario.Cliente;
+            }
+            else
+            {
+                
+            }
+
+
+                PostUsuarioResponse response = await service.CriarUsuarioAsync(usuario);
 
             return Ok(response);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(uint id)
         {

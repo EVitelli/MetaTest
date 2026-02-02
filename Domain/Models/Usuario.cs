@@ -46,4 +46,18 @@ namespace Domain.Models
         public required string Email { get; set; }
         public DateTime DataDelecao { get; set; }
     }
+
+    public class UsuarioAuthInfoRequest
+    {
+        public required string Email { get; set; }
+        public required string Hash { get; set; }
+    }
+
+    public class UsuarioAuthInfoResponse
+    {
+        public required string Email { get; set; }
+        public ETipoUsuario Tipo { get; set; }
+
+
+    }
 }

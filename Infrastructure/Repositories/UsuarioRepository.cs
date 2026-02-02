@@ -2,7 +2,6 @@
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Repositories
 {
@@ -32,6 +31,11 @@ namespace Infrastructure.Repositories
         public async Task<Usuario?> BuscarUsuarioAsync(uint id)
         {
             return await context.Usuarios.FindAsync(id);
+        }
+
+        public async Task<Usuario?> BuscarAuthInfoAsync(Usuario usuario)
+        {
+            return await context.Usuarios.FirstOrDefaultAsync(x => x.Email == usuario.Email && x.Hash == usuario.Hash);
         }
 
         public async Task<Usuario> CriarUsuarioAsync(Usuario usuario)

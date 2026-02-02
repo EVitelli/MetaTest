@@ -70,6 +70,25 @@ namespace Business.Services
             };
         }
 
+        public async Task<UsuarioAuthInfoResponse?> BuscarAuthInfoAsync(UsuarioAuthInfoRequest request)
+        {
+            Usuario? usuario = new()
+            {
+                Email = request.Email,
+                Hash = request.Hash
+            };
+
+            usuario = await repository.BuscarAuthInfoAsync(usuario);
+
+            if (usuario is null)
+                return null;
+
+            return new UsuarioAuthInfoResponse
+            {
+                Tipo = usuario.Tipo,
+                Email = usuario.Email,
+            };
+        }
         public async Task<DeleteUsuarioResponse?> DeletarUsuarioAsync(uint id)
         {
             Usuario? usuario = await repository.DeletarUsuarioAsync(id);

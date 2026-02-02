@@ -3,7 +3,6 @@ using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
 using Infrastructure;
 using Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +15,8 @@ builder.Services.AddSwaggerGen();
 
 //TODO: Send dependency injection for another classes
 builder.Services.AddDbContext<DatabaseContext>();
+builder.Services.AddTransient<IAuthService, AuthService>();
+builder.Services.AddTransient<ILoginService, LoginService>();
 builder.Services.AddTransient<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddTransient<IUsuarioService, UsuarioService>();
 builder.Services.AddTransient<IContaRepository, ContaRepository>();

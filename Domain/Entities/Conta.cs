@@ -17,5 +17,6 @@ namespace Domain.Entities
         public DateTime AtualizadoEm { get ;set; } = DateTime.Now;
         public DateTime? DeletadoEm { get ; set ; }
         public EStatus Status { get ; set ; }
+        public string? AtualizadoPor { get; set; }
     }
 }

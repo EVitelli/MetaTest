@@ -17,5 +17,16 @@ namespace Infrastructure
                 optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Meta;Trusted_Connection=True;MultipleActiveResultSets=true;");
             }
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Usuario>()
+                .ToTable(tb => tb.UseSqlOutputClause(false));
+
+            modelBuilder.Entity<Conta>()
+                .ToTable(tb => tb.UseSqlOutputClause(false));
+        }
     }
 }

@@ -5,5 +5,6 @@
         uint Id { get; set; }
         DateTime CriadoEm { get; set; }
         DateTime AtualizadoEm { get; set; }
+        string? AtualizadoPor { get; set; }
     }
 }

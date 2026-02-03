@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Converters;
 using Domain.Enums;
 using Domain.Interfaces.Repositories;
 using Domain.Interfaces.Services;
@@ -6,19 +6,48 @@ using Domain.Models;
 
 namespace Business.Services
 {
-    public class ContaService(IContaRepository repository, IUsuarioService usuarioService) : IContaService
-
+    public class ContaService(IContaRepository repository) : IContaService
     {
-        public Task<AtualizaLimiteCreditoResponse> AtualizarLimiteCreditoAsync(ContaRequest conta)
+        public async Task<AtualizarLimiteCreditoResponse> AtualizarLimiteCreditoAsync(AtualizarLimiteCreditoRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Domain.Entities.Conta? conta = await repository.BuscarContaPorCodigoAsync(request.CodigoConta);
+
+                ValidaConta(conta);
+
+                if (request.LimiteCredito < conta.SaldoCredito)
+                    conta.SaldoCredito = request.LimiteCredito;
+
+                conta.LimiteCredito = request.LimiteCredito;
+                conta.AtualizadoPor = request.Operador;
+
+                await repository.AtualizarContaAsync(conta);
+
+                return new AtualizarLimiteCreditoResponse
+                {
+                    Id = conta.Id,
+                    Codigo = conta.Codigo,
+                    LimiteCredito = conta.LimiteCredito,
+                    DataAtualizacao = conta.AtualizadoEm
+                };
+
+            }
+            catch (ArgumentException ae)
+            {
+                throw new ArgumentException(message: "Erro ao atualizar sreserva da conta.", ae);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(message: "Erro inesperado ao atualizar reserva da conta.", e);
+            }
         }
 
         public async Task<AtualizaReservaResponse> AtualizarReservaAsync(AtualizaValorContaRequest request)
         {
             try
             {
-                Conta? conta = await repository.BuscarContaPorCodigoAsync(request.CodigoConta);
+                Domain.Entities.Conta? conta = await repository.BuscarContaPorCodigoAsync(request.CodigoConta);
 
                 ValidaConta(conta);
 
@@ -69,7 +98,7 @@ namespace Business.Services
         {
             try
             {
-                Conta? conta = await repository.BuscarContaPorCodigoAsync(request.CodigoConta);
+                Domain.Entities.Conta? conta = await repository.BuscarContaPorCodigoAsync(request.CodigoConta);
 
                 ValidaConta(conta);
 
@@ -109,7 +138,7 @@ namespace Business.Services
         {
             try
             {
-                Conta? conta = await repository.BuscarContaPorCodigoAsync(request.CodigoConta);
+                Domain.Entities.Conta? conta = await repository.BuscarContaPorCodigoAsync(request.CodigoConta);
 
                 ValidaConta(conta);
 
@@ -148,55 +177,42 @@ namespace Business.Services
             }
         }
 
-        public async Task<GetContaResponse?> BuscarContaPorCodigoAsync(string codigoConta)
+        public async Task<List<Domain.Models.Conta>> BuscarContaPorClienteAsync(uint idCliente)
         {
-            Conta? contaDb = await repository.BuscarContaPorCodigoAsync(codigoConta);
+            List<Domain.Entities.Conta> contas = await repository.BuscarContaPorClienteAsync(idCliente);
 
-            if (contaDb is null)
+            if (contas is null || !contas.Any())
                 return null;
 
-            return new GetContaResponse
-            {
-                Id = contaDb.Id,
-                ClienteId = contaDb.IdUsuarioCliente,
-                GerenteId = contaDb.IdUsuarioGerente,
-                Codigo = contaDb.Codigo,
-                Saldo = contaDb.Saldo,
-                Reservado = contaDb.Reservado,
-                LimiteCredito = contaDb.LimiteCredito,
-                SaldoCredito = contaDb.SaldoCredito,
-                DataCriacao = contaDb.CriadoEm,
-                CriadoEm = contaDb.CriadoEm,
-                AtualizadoEm = contaDb.AtualizadoEm,
-                DeletadoEm = contaDb.DeletadoEm,
-                Status = contaDb.Status
-            };
+            return contas.Select(x => x.MapToModel()).ToList();
         }
 
-        public async Task<PostContaResponse> CriarContaAsync(ContaRequest conta)
+        public async Task<CriarContaResponse> CriarContaAsync(CriarContaRequest request)
         {
-            ArgumentNullException.ThrowIfNull(conta);
+            ArgumentNullException.ThrowIfNull(request);
             try
             {
-                await ValidaEnvolvidosAsync(conta);
+                if (request.ClienteId == request.GerenteId)
+                    throw new ArgumentException("O cliente e o gerente não podem ser a mesma pessoa.");
 
-                Conta novaConta = new()
+                Domain.Entities.Conta novaConta = new()
                 {
-                    IdUsuarioCliente = conta.ClienteId,
-                    IdUsuarioGerente = conta.GerenteId,
-                    LimiteCredito = conta.LimiteCredito,
+                    IdUsuarioCliente = request.ClienteId,
+                    IdUsuarioGerente = request.GerenteId,
+                    LimiteCredito = request.LimiteCredito,
                     Codigo = CriarCodigo(),
                     Saldo = 0,
                     Reservado = 0,
-                    SaldoCredito = conta.LimiteCredito,
+                    SaldoCredito = request.LimiteCredito,
                     CriadoEm = DateTime.UtcNow,
                     AtualizadoEm = DateTime.UtcNow,
+                    AtualizadoPor = request.Operador,
                     Status = EStatus.Ativo
                 };
 
                 novaConta = await repository.CriarContaAsync(novaConta);
 
-                return new PostContaResponse
+                return new CriarContaResponse
                 {
                     Id = novaConta.Id,
                     ClienteId = novaConta.IdUsuarioCliente,
@@ -216,9 +232,28 @@ namespace Business.Services
             }
         }
 
-        public Task<DeleteContaResponse> DeletarContaAsync(uint id)
+        public async Task<DeletarContaResponse> DeletarContaAsync(DeletarContaRequest request)
         {
-            throw new NotImplementedException();
+            Domain.Entities.Conta? conta = await repository.BuscarContaPorIdAsync(request.IdConta);
+
+            if (conta is null)
+                return null;
+
+            if (conta.Saldo > 0 || conta.Reservado > 0 || conta.SaldoCredito != conta.LimiteCredito)
+            {
+                throw new InvalidOperationException("Usuário possui contas com saldo ou valores reservados. Não é possível deletar o usuário.");
+            }
+
+            conta.AtualizadoPor = request.Operador;
+
+            conta = await repository.DeletarContaAsync(conta);
+
+            return new DeletarContaResponse
+            {
+                Id = conta.Id,
+                Codigo = conta.Codigo,
+                DataDelecao = conta.DeletadoEm ?? DateTime.Now
+            };
         }
 
         public async Task<TransferenciaResponse> ProcessarTransferenciaAsync(TransferenciaRequest request)
@@ -226,8 +261,8 @@ namespace Business.Services
 
             try
             {
-                Conta? contaOrigem = await repository.BuscarContaPorCodigoAsync(request.CodigoContaOrigem);
-                Conta? contaDestino = await repository.BuscarContaPorCodigoAsync(request.CodigoContaDestino);
+                Domain.Entities.Conta? contaOrigem = await repository.BuscarContaPorCodigoAsync(request.CodigoContaOrigem);
+                Domain.Entities.Conta? contaDestino = await repository.BuscarContaPorCodigoAsync(request.CodigoContaDestino);
 
                 try
                 {
@@ -296,21 +331,7 @@ namespace Business.Services
             return n1.ToString() + n2.ToString().Substring(1);
         }
 
-        private async Task ValidaEnvolvidosAsync(ContaRequest conta)
-        {
-            if (conta.ClienteId == conta.GerenteId)
-                throw new ArgumentException("O cliente e o gerente não podem ser a mesma pessoa.");
-
-            UsuarioResponse? cliente = await usuarioService.BuscarTodasInfoUsuarioAsync(conta.ClienteId);
-            if (cliente is null || cliente.Status == EStatus.Inativo || cliente.Tipo != ETipoUsuario.Cliente)
-                throw new ArgumentException("O cliente não foi encontrado ou foi removido.");
-
-            UsuarioResponse? gerente = await usuarioService.BuscarTodasInfoUsuarioAsync(conta.GerenteId);
-            if (gerente is null || gerente.Status == EStatus.Inativo || gerente.Tipo != ETipoUsuario.Gerente)
-                throw new ArgumentException("O gerente não foi encontrado ou foi removido.");
-        }
-
-        private static void ValidaConta(Conta? conta)
+        private static void ValidaConta(Domain.Entities.Conta? conta)
         {
             if (conta is null || conta.Status == EStatus.Inativo)
                 throw new ArgumentException("A conta não foi encontrada ou está inativa.");

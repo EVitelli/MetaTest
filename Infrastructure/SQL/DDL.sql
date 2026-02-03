@@ -71,15 +71,15 @@ CREATE TABLE UsuariosLog (
     Id BIGINT PRIMARY KEY IDENTITY(1,1),
     TipoOperacao CHAR(6),
     IdUsuario BIGINT,
-    Status INT NOT NULL,
-    Nome VARCHAR(100) NOT NULL,
-    Tipo INT NOT NULL, -- ADM, Gerente, Cliente
-    CPF VARCHAR(14) UNIQUE NOT NULL,
-    Email VARCHAR(100) UNIQUE NOT NULL,
+    Status INT,
+    Nome VARCHAR(100),
+    Tipo INT,
+    CPF VARCHAR(14),
+    Email VARCHAR(100),
     Hash VARCHAR(255),
     Salt VARBINARY(128),
-    CriadoEm DATETIME2 DEFAULT GETDATE(),
-    AtualizadoEm DATETIME2 DEFAULT GETDATE(),
+    CriadoEm DATETIME2,
+    AtualizadoEm DATETIME2,
     AtualizadoPor VARCHAR(255),
     DeletadoEm DATETIME2 NULL
 );
@@ -88,14 +88,14 @@ CREATE TABLE ContasLog (
     Id BIGINT PRIMARY KEY IDENTITY(1,1),
     TipoOperacao CHAR(6),
     IdConta BIGINT ,
-    IdUsuarioCliente BIGINT NOT NULL,
-    IdUsuarioGerente BIGINT NOT NULL,
-    Codigo VARCHAR(4) UNIQUE NOT NULL,
+    IdUsuarioCliente BIGINT,
+    IdUsuarioGerente BIGINT,
+    Codigo VARCHAR(4),
     Saldo DECIMAL(18, 2),
     Reservado DECIMAL(18, 2),
     LimiteCredito DECIMAL(18, 2),
     SaldoCredito DECIMAL(18, 2),
-    Status INT NOT NULL,
+    Status INT,
     CriadoEm DATETIME2 ,
     AtualizadoEm DATETIME2 ,
     AtualizadoPor VARCHAR(255),
@@ -114,8 +114,14 @@ BEGIN
 
     IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
     BEGIN
-        -- Both tables have data, so it's an UPDATE
-        SET @tipoOperacao = 'UPDATE';
+        IF((SELECT DeletadoEm FROM inserted) IS NOT NULL)
+        BEGIN
+            SET @tipoOperacao = 'DELETE';
+        END
+        ELSE
+        BEGIN
+            SET @tipoOperacao = 'UPDATE';
+        END
     END
     ELSE IF EXISTS (SELECT * FROM inserted)
     BEGIN
@@ -186,8 +192,14 @@ BEGIN
 
     IF EXISTS (SELECT * FROM inserted) AND EXISTS (SELECT * FROM deleted)
     BEGIN
-        -- Both tables have data, so it's an UPDATE
-        SET @tipoOperacao = 'UPDATE';
+        IF((SELECT DeletadoEm FROM inserted) IS NOT NULL)
+        BEGIN
+            SET @tipoOperacao = 'DELETE';
+        END
+        ELSE
+        BEGIN
+            SET @tipoOperacao = 'UPDATE';
+        END
     END
     ELSE IF EXISTS (SELECT * FROM inserted)
     BEGIN

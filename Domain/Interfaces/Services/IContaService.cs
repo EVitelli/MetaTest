@@ -10,7 +10,7 @@ namespace Domain.Interfaces.Services
         Task<AtualizaSaldoResponse> AtualizarSaldoAsync(AtualizaValorContaRequest request);
         Task<AtualizaSaldoCreditoResponse> AtualizarSaldoCreditoAsync(AtualizaValorContaRequest request);
         Task<List<Conta>> BuscarContaPorClienteAsync(uint idCliente);
-        Task<DeletarContaResponse> DeletarContaAsync(DeletarContaRequest request);
+        Task<DeletarContaResponse?> DeletarContaAsync(DeletarContaRequest request);
         Task<TransferenciaResponse> ProcessarTransferenciaAsync(TransferenciaRequest request);
     }
 }

@@ -9,14 +9,14 @@ namespace WebApi.Controllers
     public class LoginController(ILoginService service): ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> LoginAsync(LoginRequest usuario)
+        public async Task<IActionResult> LoginAsync(LoginRequest request)
         {
-            string token = await service.LoginAsync(usuario);
+            string? token = await service.LoginAsync(request);
 
             if(token is null)
                 return NotFound("Usuário ou senha incorretos!");
 
-            LoginResponse response = new LoginResponse
+            LoginResponse response = new()
             {
                 Token = token
             };

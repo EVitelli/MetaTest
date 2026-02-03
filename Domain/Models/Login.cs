@@ -15,6 +15,7 @@ namespace Domain.Models
 
     public class TokenRequest
     {
+        public required uint Id { get; set; }
         public required string Email { get; set; }
         public ETipoUsuario Tipo { get; set; }
         public string Role { get => Tipo.ToString(); }

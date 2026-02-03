@@ -14,5 +14,6 @@ namespace Domain.Entities
         public EStatusTransacao StatusTransacao { get; set; }
         public DateTime CriadoEm { get; set; }
         public DateTime AtualizadoEm { get; set; }
+        public string? AtualizadoPor { get; set; }
     }
 }

@@ -17,6 +17,7 @@ namespace Business.Services
             var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature);
 
             var claims = new ClaimsIdentity();
+            claims.AddClaim(new Claim("Id", usuario.Id.ToString()));
             claims.AddClaim(new Claim(ClaimTypes.Email, usuario.Email));
             claims.AddClaim(new Claim(ClaimTypes.Role, usuario.Role));
 

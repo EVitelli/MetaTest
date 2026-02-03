@@ -232,7 +232,7 @@ namespace Business.Services
             }
         }
 
-        public async Task<DeletarContaResponse> DeletarContaAsync(DeletarContaRequest request)
+        public async Task<DeletarContaResponse?> DeletarContaAsync(DeletarContaRequest request)
         {
             Domain.Entities.Conta? conta = await repository.BuscarContaPorIdAsync(request.IdConta);
 
@@ -248,7 +248,7 @@ namespace Business.Services
 
             conta = await repository.DeletarContaAsync(conta);
 
-            return new DeletarContaResponse
+            return conta is null ? null : new DeletarContaResponse
             {
                 Id = conta.Id,
                 Codigo = conta.Codigo,

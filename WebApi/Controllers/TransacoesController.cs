@@ -1,5 +1,6 @@
 ﻿using Domain.Interfaces.Services;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -9,6 +10,7 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class TransacoesController(ITransacaoService service): ControllerBase
     {
+        [Authorize(Roles = "Cliente")]
         [HttpPost]
         public async Task<IActionResult> ProcessarTransacao(TransacaoRequest transacao)
         {

@@ -1,17 +1,20 @@
 ﻿using Domain.Enums;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models
 {
-    public class UsuarioRequest
+    public class CriarUsuarioRequest
     {
         public required string Nome { get; set; }
         public ETipoUsuario Tipo { get; set; }
         public required string Cpf { get; set; }
         public required string Email { get; set; }
         public required string Senha { get; set; }
+        [JsonIgnore]
+        public string Operador { get; set; } = string.Empty;
     }
 
-    public class PostUsuarioResponse
+    public class CriarUsuarioResponse
     {
         public uint Id { get; set; }
         public required string Email { get; set; }
@@ -41,7 +44,13 @@ namespace Domain.Models
         public DateTime? DataDelecao { get; set; }
     }
 
-    public class DeleteUsuarioResponse
+    public class DeletarUsuarioRequest
+    {
+        public uint Id { get; set; }
+        public required string Operador { get; set; }
+    }
+
+    public class DeletarUsuarioResponse
     {
         public uint Id { get; set; }
         public required string Email { get; set; }
@@ -56,9 +65,10 @@ namespace Domain.Models
 
     public class UsuarioAuthInfoResponse
     {
+        public required uint Id { get; set; }
         public required string Email { get; set; }
         public ETipoUsuario Tipo { get; set; }
-        public byte[] Salt { get; set; }
-        public string Hash { get; set; }
+        public required byte[] Salt { get; set; }
+        public required string Hash { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Models;
 
 namespace Domain.Interfaces.Repositories
 {
@@ -8,6 +9,6 @@ namespace Domain.Interfaces.Repositories
         Task<Usuario?> BuscarUsuarioPorEmailAsync(string email);
         Task<Usuario?> BuscarUsuarioAsync(uint id);
         Task<Usuario> CriarUsuarioAsync(Usuario usuario);
-        Task<Usuario?> DeletarUsuarioAsync(uint id);
+        Task<Usuario?> DeletarUsuarioAsync(Usuario usuario);
     }
 }

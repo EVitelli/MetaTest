@@ -6,17 +6,18 @@ namespace Business.Services
 {
     public class LoginService(IAuthService authService, IUsuarioService usuarioService) : ILoginService
     {
-        public async Task<string?> LoginAsync(LoginRequest usuario)
+        public async Task<string?> LoginAsync(LoginRequest request)
         {
-            UsuarioAuthInfoResponse? authInfo = await usuarioService.BuscarAuthInfoAsync(usuario.Email);
+            UsuarioAuthInfoResponse? usuario = await usuarioService.BuscarAuthInfoAsync(request.Email);
 
-            if (authInfo is null || !PasswordHasher.VerifyPassword(usuario.Senha, authInfo.Hash, authInfo.Salt))
+            if (usuario is null || !PasswordHasher.VerifyPassword(request.Senha, usuario.Hash, usuario.Salt))
                 return null;
 
             return authService.GenerateToken(new TokenRequest
             {
-                Email = authInfo.Email,
-                Tipo = authInfo.Tipo
+                Id = usuario.Id,
+                Email = usuario.Email,
+                Tipo = usuario.Tipo
             });
         }
     }

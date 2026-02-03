@@ -16,5 +16,6 @@ namespace Domain.Entities
         public DateTime CriadoEm { get; set; } = DateTime.Now;
         public DateTime AtualizadoEm { get; set; } = DateTime.Now;
         public DateTime? DeletadoEm { get; set; }
+        public string? AtualizadoPor { get; set; }
     }
 }

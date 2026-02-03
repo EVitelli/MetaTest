@@ -22,6 +22,7 @@ namespace Infrastructure.Repositories
             usuarioDb.Email = usuario.Email;
             usuarioDb.Hash = usuario.Hash;
             usuarioDb.AtualizadoEm = DateTime.Now;
+            usuarioDb.AtualizadoPor = usuario.AtualizadoPor;
 
             await context.SaveChangesAsync();
 
@@ -42,28 +43,35 @@ namespace Infrastructure.Repositories
         {
             ArgumentNullException.ThrowIfNull(usuario);
 
+            usuario.CriadoEm = DateTime.Now;
+            usuario.AtualizadoEm = DateTime.Now;
+            usuario.AtualizadoPor = usuario.AtualizadoPor;
+            usuario.Status = EStatus.Ativo;
+
             await context.Usuarios.AddAsync(usuario);
             await context.SaveChangesAsync();
 
             return usuario;
         }
 
-        public async Task<Usuario?> DeletarUsuarioAsync(uint id)
+        public async Task<Usuario?> DeletarUsuarioAsync(Usuario usuario)
         {
-            Usuario? usuario = await this.BuscarUsuarioAsync(id);
+            Usuario? usuarioDb = await this.BuscarUsuarioAsync(usuario.Id);
 
-            if (usuario is null)
+            if (usuarioDb is null)
                 return null;
 
-            if (usuario.Status == EStatus.Inativo)
-                return usuario;
+            if (usuarioDb.Status == EStatus.Inativo)
+                return usuarioDb;
 
-            usuario.Status = EStatus.Inativo;
-            usuario.DeletadoEm = DateTime.Now;
+            usuarioDb.Status = EStatus.Inativo;
+            usuarioDb.AtualizadoEm = DateTime.Now;
+            usuarioDb.DeletadoEm = DateTime.Now;
+            usuarioDb.AtualizadoPor = usuario.AtualizadoPor;
 
             await context.SaveChangesAsync();
 
-            return usuario;
+            return usuarioDb;
         }
 
     }

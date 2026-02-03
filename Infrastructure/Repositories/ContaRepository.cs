@@ -44,7 +44,7 @@ namespace Infrastructure.Repositories
             return conta;
         }
 
-        public async Task<Conta> DeletarContaAsync(Conta conta)
+        public async Task<Conta?> DeletarContaAsync(Conta conta)
         {
             Conta? contaDb = await BuscarContaPorIdAsync(conta.Id);
 
@@ -61,6 +61,7 @@ namespace Infrastructure.Repositories
 
             contaDb.Status = EStatus.Inativo;
             contaDb.LimiteCredito = 0;
+            contaDb.SaldoCredito = 0;
             contaDb.AtualizadoPor = conta.AtualizadoPor;
             contaDb.AtualizadoEm = DateTime.Now;
             contaDb.DeletadoEm = DateTime.Now;

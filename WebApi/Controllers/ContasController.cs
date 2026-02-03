@@ -32,7 +32,7 @@ namespace WebApi.Controllers
                 Operador = this.GetClaimEmailValue(User)
             };
 
-            DeletarContaResponse response = await service.DeletarContaAsync(request);
+            DeletarContaResponse? response = await service.DeletarContaAsync(request);
 
             return Ok(response);
         }

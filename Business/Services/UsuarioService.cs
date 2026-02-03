@@ -7,28 +7,28 @@ using Domain.Models;
 
 namespace Business.Services
 {
-    public class UsuarioService(IUsuarioRepository repository) : IUsuarioService
+    public class UsuarioService(IUsuarioRepository repository, IContaService contaService) : IUsuarioService
     {
-        public async Task<PostUsuarioResponse> CriarUsuarioAsync(UsuarioRequest usuario)
+        public async Task<CriarUsuarioResponse> CriarUsuarioAsync(CriarUsuarioRequest request)
         {
-            ArgumentNullException.ThrowIfNull(usuario);
+            ArgumentNullException.ThrowIfNull(request);
 
-            byte[] salt;
-            var hash = PasswordHasher.HashPassword(usuario.Senha, out salt);
+            var hash = PasswordHasher.HashPassword(request.Senha, out byte[] salt);
 
             //TODO: add fluent validation
             Usuario usuarioCriado = await repository.CriarUsuarioAsync(new Usuario
             {
-                Nome = usuario.Nome,
-                Tipo = usuario.Tipo,
-                Cpf = usuario.Cpf,
-                Email = usuario.Email,
+                Nome = request.Nome,
+                Tipo = request.Tipo,
+                Cpf = request.Cpf,
+                Email = request.Email,
                 Status = EStatus.Ativo,
                 Hash = hash,
-                Salt = salt
+                Salt = salt,
+                AtualizadoPor = request.Operador,
             });
 
-            return new PostUsuarioResponse
+            return new CriarUsuarioResponse
             {
                 Id = usuarioCriado.Id,
                 Email = usuarioCriado.Email,
@@ -84,17 +84,38 @@ namespace Business.Services
 
             return new UsuarioAuthInfoResponse
             {
+                Id = usuario.Id,
                 Tipo = usuario.Tipo,
                 Email = usuario.Email,
                 Hash = usuario.Hash,
                 Salt = usuario.Salt
             };
         }
-        public async Task<DeleteUsuarioResponse?> DeletarUsuarioAsync(uint id)
-        {
-            Usuario? usuario = await repository.DeletarUsuarioAsync(id);
 
-            return usuario is null ? null : new DeleteUsuarioResponse
+        public async Task<DeletarUsuarioResponse?> DeletarUsuarioAsync(DeletarUsuarioRequest request)
+        {
+            Usuario? usuario = await repository.BuscarUsuarioAsync(request.Id);
+
+            if (usuario is null)
+                return null;
+
+            List<Domain.Models.Conta> contas = await contaService.BuscarContaPorClienteAsync(usuario.Id);
+
+            foreach (var conta in contas)
+            {
+                await contaService.DeletarContaAsync(new()
+                {
+                    IdConta = conta.Id,
+                    Operador = request.Operador
+
+                });
+            }
+
+            usuario.AtualizadoPor = request.Operador;
+
+            usuario = await repository.DeletarUsuarioAsync(usuario);
+
+            return usuario is null ? null : new DeletarUsuarioResponse
             {
                 Id = usuario.Id,
                 Email = usuario.Email,

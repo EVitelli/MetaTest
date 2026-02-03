@@ -11,6 +11,6 @@ namespace Domain.Interfaces.Repositories
         Task<Conta?> BuscarContaPorCodigoAsync(string codigoConta);
         Task<Conta?> BuscarContaPorIdAsync(uint id);
         Task<Conta> CriarContaAsync(Conta conta);
-        Task<Conta> DeletarContaAsync(Conta conta);
+        Task<Conta?> DeletarContaAsync(Conta conta);
     }
 }

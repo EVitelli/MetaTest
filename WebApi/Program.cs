@@ -1,11 +1,7 @@
-using Business.Services;
-using Domain.Interfaces.Repositories;
-using Domain.Interfaces.Services;
-using Infrastructure;
-using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using WebApi.Config;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,17 +30,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
-//TODO: Send dependency injection for another classes
-builder.Services.AddDbContext<DatabaseContext>();
-builder.Services.AddTransient<IAuthService, AuthService>();
-builder.Services.AddTransient<ILoginService, LoginService>();
-builder.Services.AddTransient<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddTransient<IUsuarioService, UsuarioService>();
-builder.Services.AddTransient<IContaRepository, ContaRepository>();
-builder.Services.AddTransient<IContaService, ContaService>();
-builder.Services.AddScoped<ITransacaoRepository, TransacaoRepository>();
-builder.Services.AddScoped<ITransacaoService, TransacaoService>();
+DependencyInjection.Inject(builder.Services);
 
 var app = builder.Build();
 

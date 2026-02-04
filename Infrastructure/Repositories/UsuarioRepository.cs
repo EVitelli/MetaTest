@@ -7,28 +7,6 @@ namespace Infrastructure.Repositories
 {
     public class UsuarioRepository(DatabaseContext context) : IUsuarioRepository
     {
-        //TODO: Remove if don't use
-        public async Task<Usuario?> AtualizarUsuarioAsync(Usuario usuario)
-        {
-            Usuario? usuarioDb = await context.Usuarios.FirstOrDefaultAsync(x => x.Id == usuario.Id);
-
-            if (usuarioDb is null)
-                return null;
-
-            usuarioDb.Status = usuario.Status;
-            usuarioDb.Nome = usuario.Nome;
-            usuarioDb.Tipo = usuario.Tipo;
-            usuarioDb.Cpf = usuario.Cpf;
-            usuarioDb.Email = usuario.Email;
-            usuarioDb.Hash = usuario.Hash;
-            usuarioDb.AtualizadoEm = DateTime.Now;
-            usuarioDb.AtualizadoPor = usuario.AtualizadoPor;
-
-            await context.SaveChangesAsync();
-
-            return usuarioDb;
-        }
-
         public async Task<Usuario?> BuscarUsuarioAsync(uint id)
         {
             return await context.Usuarios.FindAsync(id);

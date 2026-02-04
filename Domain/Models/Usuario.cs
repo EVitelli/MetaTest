@@ -21,16 +21,6 @@ namespace Domain.Models
         public DateTime DataCriacao { get; set; }
     }
 
-    public class GetUsuarioResponse
-    {
-        public uint Id { get; set; }
-        public required string Email { get; set; }
-        public DateTime DataCriacao { get; set; }
-        public DateTime DataAtualizacao { get; set; }
-        public required string Nome { get; set; }
-        public required string Cpf { get; set; }
-    }
-
     public class UsuarioResponse
     {
         public uint Id { get; set; }
@@ -55,12 +45,6 @@ namespace Domain.Models
         public uint Id { get; set; }
         public required string Email { get; set; }
         public DateTime DataDelecao { get; set; }
-    }
-
-    public class UsuarioAuthInfoRequest
-    {
-        public required string Email { get; set; }
-        public required string Senha { get; set; }
     }
 
     public class UsuarioAuthInfoResponse

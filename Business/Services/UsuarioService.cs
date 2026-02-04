@@ -13,48 +13,40 @@ namespace Business.Services
         {
             ArgumentNullException.ThrowIfNull(request);
 
-            var hash = PasswordHasher.HashPassword(request.Senha, out byte[] salt);
-
-            //TODO: add fluent validation
-            Usuario usuarioCriado = await repository.CriarUsuarioAsync(new Usuario
+            try
             {
-                Nome = request.Nome,
-                Tipo = request.Tipo,
-                Cpf = request.Cpf,
-                Email = request.Email,
-                Status = EStatus.Ativo,
-                Hash = hash,
-                Salt = salt,
-                AtualizadoPor = request.Operador,
-            });
+                var hash = PasswordHasher.HashPassword(request.Senha, out byte[] salt);
 
-            return new CriarUsuarioResponse
+                Usuario usuarioCriado = await repository.CriarUsuarioAsync(new Usuario
+                {
+                    Nome = request.Nome,
+                    Tipo = request.Tipo,
+                    Cpf = request.Cpf,
+                    Email = request.Email,
+                    Status = EStatus.Ativo,
+                    Hash = hash,
+                    Salt = salt,
+                    AtualizadoPor = request.Operador,
+                });
+
+                return new CriarUsuarioResponse
+                {
+                    Id = usuarioCriado.Id,
+                    Email = usuarioCriado.Email,
+                    DataCriacao = usuarioCriado.CriadoEm
+                };
+            }
+            catch (ArgumentNullException ae)
             {
-                Id = usuarioCriado.Id,
-                Email = usuarioCriado.Email,
-                DataCriacao = usuarioCriado.CriadoEm
-            };
+                throw new ArgumentException(message: "Erro ao criar um novo usuario.", ae);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(message: "Erro inesperado ao criar um novo usuario.", e);
+            }
         }
 
-        public async Task<GetUsuarioResponse?> BuscarUsuarioAsync(uint id)
-        {
-            var usuario = await repository.BuscarUsuarioAsync(id);
-
-            if (usuario is null)
-                return null;
-
-            return new GetUsuarioResponse
-            {
-                Id = usuario.Id,
-                Nome = usuario.Nome,
-                Cpf = usuario.Cpf,
-                Email = usuario.Email,
-                DataCriacao = usuario.CriadoEm,
-                DataAtualizacao = usuario.AtualizadoEm
-            };
-        }
-
-        public async Task<UsuarioResponse?> BuscarTodasInfoUsuarioAsync(uint id)
+        public async Task<UsuarioResponse?> BuscarUsuarioAsync(uint id)
         {
             var usuario = await repository.BuscarUsuarioAsync(id);
 
@@ -94,33 +86,47 @@ namespace Business.Services
 
         public async Task<DeletarUsuarioResponse?> DeletarUsuarioAsync(DeletarUsuarioRequest request)
         {
-            Usuario? usuario = await repository.BuscarUsuarioAsync(request.Id);
+            ArgumentNullException.ThrowIfNull(request);
 
-            if (usuario is null)
-                return null;
-
-            List<Domain.Models.Conta> contas = await contaService.BuscarContaPorClienteAsync(usuario.Id);
-
-            foreach (var conta in contas)
+            try
             {
-                await contaService.DeletarContaAsync(new()
-                {
-                    IdConta = conta.Id,
-                    Operador = request.Operador
+                Usuario? usuario = await repository.BuscarUsuarioAsync(request.Id);
 
-                });
+                if (usuario is null || usuario.Status == EStatus.Inativo)
+                    return null;
+
+                List<Domain.Models.Conta> contas = await contaService.BuscarContaPorClienteAsync(usuario.Id);
+
+                foreach (var conta in contas)
+                {
+                    await contaService.DeletarContaAsync(new()
+                    {
+                        IdConta = conta.Id,
+                        Operador = request.Operador
+
+                    });
+                }
+
+                usuario.AtualizadoPor = request.Operador;
+
+                usuario = await repository.DeletarUsuarioAsync(usuario);
+
+                return new DeletarUsuarioResponse
+                {
+                    Id = usuario.Id,
+                    Email = usuario.Email,
+                    DataDelecao = usuario.DeletadoEm!.Value
+                };
+            }
+            catch (InvalidOperationException IOEx)
+            {
+                throw new Exception("Não foi possível remover usuário." , IOEx);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception("Erro inesperado ao remover usuário.", ex);
             }
 
-            usuario.AtualizadoPor = request.Operador;
-
-            usuario = await repository.DeletarUsuarioAsync(usuario);
-
-            return usuario is null ? null : new DeletarUsuarioResponse
-            {
-                Id = usuario.Id,
-                Email = usuario.Email,
-                DataDelecao = usuario.DeletadoEm!.Value
-            };
         }
 
     }

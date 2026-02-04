@@ -59,7 +59,7 @@ namespace WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> BuscarUsuarioAsync(uint id)
         {
-            GetUsuarioResponse? response = await service.BuscarUsuarioAsync(id);
+            UsuarioResponse? response = await service.BuscarUsuarioAsync(id);
 
             return Ok(response);
         }
@@ -68,7 +68,7 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletarUsuarioAsync(uint id)
         {
-            UsuarioResponse? usuario = await service.BuscarTodasInfoUsuarioAsync(id);
+            UsuarioResponse? usuario = await service.BuscarUsuarioAsync(id);
 
             if (usuario is null)
                 return NoContent();

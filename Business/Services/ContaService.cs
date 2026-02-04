@@ -224,11 +224,11 @@ namespace Business.Services
             }
             catch (ArgumentException ae)
             {
-                throw new ArgumentException(message: "Erro ao criar um nova conta.", ae);
+                throw new ArgumentException(message: "Erro ao criar uma nova conta.", ae);
             }
             catch (Exception e)
             {
-                throw new Exception(message: "Erro inesperado ao criar um nova conta.", e);
+                throw new Exception(message: "Erro inesperado ao criar uma nova conta.", e);
             }
         }
 

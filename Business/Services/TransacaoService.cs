@@ -17,7 +17,10 @@ namespace Business.Services
                 IdUsuarioCliente = request.IdCliente,
                 CodigoConta = request.CodigoConta,
                 Tipo = request.TipoOperacao,
-                Valor = request.Valor
+                Valor = request.Valor,
+                AtualizadoPor = "Sistema",
+                CriadoEm = DateTime.Now,
+                AtualizadoEm = DateTime.Now,
             };
 
             try

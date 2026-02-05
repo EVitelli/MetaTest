@@ -4,6 +4,6 @@ namespace Domain.Interfaces.Services
 {
     public  interface ILoginService
     {
-        Task<string?> LoginAsync(LoginRequest request);
+        Task<LoginResponse?> LoginAsync(LoginRequest request);
     }
 }

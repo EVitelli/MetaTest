@@ -11,15 +11,10 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginAsync(LoginRequest request)
         {
-            string? token = await service.LoginAsync(request);
+            LoginResponse? response = await service.LoginAsync(request);
 
-            if(token is null)
+            if(response is null)
                 return NotFound("Usuário ou senha incorretos!");
-
-            LoginResponse response = new()
-            {
-                Token = token
-            };
 
             return Ok(response);
         }

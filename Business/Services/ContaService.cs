@@ -248,7 +248,7 @@ namespace Business.Services
 
             conta = await repository.DeletarContaAsync(conta);
 
-            return conta is null ? null : new DeletarContaResponse
+            return new DeletarContaResponse
             {
                 Id = conta.Id,
                 Codigo = conta.Codigo,
